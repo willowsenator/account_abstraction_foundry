@@ -16,39 +16,35 @@ contract MinimalAccount is IAccount, Ownable {
     error MinimalAccount__CallFailed(bytes result);
 
     // Immutable variables
-    IEntryPoint private immutable i_entryPoint;
+    IEntryPoint private immutable I_ENTRY_POINT;
 
     modifier requireFromEntryPoint() {
-       if(msg.sender != address(i_entryPoint)) {
-           revert MinimalAccount__NotFromEntryPoint();
-       }
-         _;
+        if (msg.sender != address(I_ENTRY_POINT)) {
+            revert MinimalAccount__NotFromEntryPoint();
+        }
+        _;
     }
 
     modifier requireFromEntryPointOrOwner() {
-       if(msg.sender != address(i_entryPoint) && msg.sender != owner()) {
-           revert MinimalAccount__NotFromEntryPointOrOwner();
-       }
-         _;
+        if (msg.sender != address(I_ENTRY_POINT) && msg.sender != owner()) {
+            revert MinimalAccount__NotFromEntryPointOrOwner();
+        }
+        _;
     }
 
     constructor(address entryPoint) Ownable(msg.sender) {
-        i_entryPoint = IEntryPoint(entryPoint);
+        I_ENTRY_POINT = IEntryPoint(entryPoint);
     }
 
     receive() external payable {}
 
-
     // External functions
-    function execute(address dest, uint256 value, bytes calldata func) external  requireFromEntryPointOrOwner{
+    function execute(address dest, uint256 value, bytes calldata func) external requireFromEntryPointOrOwner {
         (bool success, bytes memory result) = dest.call{value: value}(func);
-        if(!success) {
+        if (!success) {
             revert MinimalAccount__CallFailed(result);
         }
-
-        
     }
-
 
     // A signature is valid, if it's the MinimalAccount owner
     function validateUserOp(PackedUserOperation calldata userOp, bytes32 userOpHash, uint256 missingAccountFunds)
@@ -79,13 +75,13 @@ contract MinimalAccount is IAccount, Ownable {
 
     function _payPrefund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds > 0) {
-            (bool success, ) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");
+            (bool success,) = payable(msg.sender).call{value: missingAccountFunds, gas: type(uint256).max}("");
             require(success, "MinimalAccount: prefund failed");
         }
     }
 
     // Getters
     function getEntryPoint() external view returns (IEntryPoint) {
-        return i_entryPoint;
+        return I_ENTRY_POINT;
     }
 }

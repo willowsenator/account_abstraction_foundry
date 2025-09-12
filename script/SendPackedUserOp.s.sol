@@ -7,7 +7,7 @@ import {MinimalAccount} from "../src/ethereum/MinimalAccount.sol";
 contract DeployMinimal is Script {
     function run() public {
         vm.startBroadcast();
-        
+
         vm.stopBroadcast();
     }
 }
