@@ -6,13 +6,19 @@ import {DeployMinimal} from "../script/DeployMinimal.s.sol";
 import {MinimalAccount} from "../src/ethereum/MinimalAccount.sol";
 import {HelperConfig} from "../script/HelperConfig.s.sol";
 import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
+import {SendPackedUserOp, PackedUserOperation, IEntryPoint} from "../script/SendPackedUserOp.s.sol";
+import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract MinimalAccountTest is Test {
+    using MessageHashUtils for bytes32;
+
     DeployMinimal deployer;
     HelperConfig helperConfig;
     HelperConfig.NetworkConfig public activeNetworkConfig;
     MinimalAccount public minimalAccount;
     ERC20Mock public usdc;
+    SendPackedUserOp public sendPackedUserOp;
 
     address randomUser = makeAddr("randomUser");
 
@@ -22,6 +28,7 @@ contract MinimalAccountTest is Test {
         deployer = new DeployMinimal();
         (activeNetworkConfig, minimalAccount) = deployer.deployMinimalAccount();
         usdc = new ERC20Mock();
+        sendPackedUserOp = new SendPackedUserOp();
     }
 
     function testOwnerCanExecuteCommands() public {
@@ -50,5 +57,23 @@ contract MinimalAccountTest is Test {
         vm.prank(randomUser);
         vm.expectRevert(MinimalAccount.MinimalAccount__NotFromEntryPointOrOwner.selector);
         minimalAccount.execute(dest, value, funcData);
+    }
+
+    function testRecoverSignedOp() public view {
+        // Arrange
+        assertEq(usdc.balanceOf(address(minimalAccount)), 0);
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory funcData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
+
+        bytes memory executeCallData = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, funcData);
+
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generatedSignedUserOp(executeCallData, activeNetworkConfig);
+        bytes32 userOpHash = IEntryPoint(activeNetworkConfig.entryPoint).getUserOpHash(packedUserOp);
+        // Act
+        address currentSigner = ECDSA.recover(userOpHash.toEthSignedMessageHash(), packedUserOp.signature);
+
+        // Assert
     }
 }
