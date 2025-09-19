@@ -17,7 +17,8 @@ contract HelperConfig is Script {
     uint256 constant LOCAL_CHAINID = 31337;
     address constant BURNER_WALLET = address(0);
 
-    address constant FOUNDRY_DEFAULT_WALLET = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
+    // address constant FOUNDRY_DEFAULT_WALLET = 0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38;
+    address constant ANVIL_DEFAULT_WALLET = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
     NetworkConfig public activeNetworkConfig;
 
@@ -56,10 +57,10 @@ contract HelperConfig is Script {
 
         // Deploy mocks
         console2.log("Deploying mocks...");
-        vm.startBroadcast(FOUNDRY_DEFAULT_WALLET);
+        vm.startBroadcast(ANVIL_DEFAULT_WALLET);
         EntryPoint entryPoint = new EntryPoint();
         vm.stopBroadcast();
 
-        return NetworkConfig({entryPoint: address(entryPoint), account: FOUNDRY_DEFAULT_WALLET});
+        return NetworkConfig({entryPoint: address(entryPoint), account: ANVIL_DEFAULT_WALLET});
     }
 }

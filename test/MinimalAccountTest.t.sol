@@ -14,7 +14,6 @@ contract MinimalAccountTest is Test {
     using MessageHashUtils for bytes32;
 
     DeployMinimal deployer;
-    HelperConfig helperConfig;
     HelperConfig.NetworkConfig public activeNetworkConfig;
     MinimalAccount public minimalAccount;
     ERC20Mock public usdc;
@@ -75,5 +74,36 @@ contract MinimalAccountTest is Test {
         address currentSigner = ECDSA.recover(userOpHash.toEthSignedMessageHash(), packedUserOp.signature);
 
         // Assert
+        assertEq(currentSigner, minimalAccount.owner());
     }
+
+    // 1. Sign user ops
+    // 2. Call validate userops
+    // 3. Assert the return is correct
+    function testValidationOfUserOps() public {
+        // Arrange
+        assertEq(usdc.balanceOf(address(minimalAccount)), 0);
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory funcData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
+
+        bytes memory executeCallData = abi.encodeWithSelector(MinimalAccount.execute.selector, dest, value, funcData);
+
+        PackedUserOperation memory packedUserOp =
+            sendPackedUserOp.generatedSignedUserOp(executeCallData, activeNetworkConfig);
+        bytes32 userOpHash = IEntryPoint(activeNetworkConfig.entryPoint).getUserOpHash(packedUserOp);
+        uint256 missingAccountFunds = 1e18;
+
+        vm.deal(address(minimalAccount), missingAccountFunds);
+
+        // Act
+        vm.prank(activeNetworkConfig.entryPoint);
+        uint256 validationData = minimalAccount.validateUserOp(packedUserOp, userOpHash, missingAccountFunds);
+
+        // Assert
+        assertEq(validationData, 0);
+    }
+
+    // function testEntryPointCanExecuteCommands() public {}
+
 }
