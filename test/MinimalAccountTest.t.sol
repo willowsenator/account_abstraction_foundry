@@ -105,5 +105,4 @@ contract MinimalAccountTest is Test {
     }
 
     // function testEntryPointCanExecuteCommands() public {}
-
 }
