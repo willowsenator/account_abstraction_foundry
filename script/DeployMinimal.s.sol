@@ -6,7 +6,9 @@ import {MinimalAccount} from "../src/ethereum/MinimalAccount.sol";
 import {HelperConfig} from "./HelperConfig.s.sol";
 
 contract DeployMinimal is Script {
-    function run() public {}
+    function run() public {
+        deployMinimalAccount();
+    }
 
     function deployMinimalAccount() public returns (HelperConfig.NetworkConfig memory, MinimalAccount) {
         HelperConfig helperConfig = new HelperConfig();
