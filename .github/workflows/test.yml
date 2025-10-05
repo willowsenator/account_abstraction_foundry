@@ -13,8 +13,6 @@ jobs:
       FOUNDRY_PROFILE: ethereum
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
