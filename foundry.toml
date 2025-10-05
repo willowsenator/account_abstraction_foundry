@@ -1,8 +1,19 @@
+# Global defaults the editor and all profiles can read
 [profile.default]
-src = "src"
-out = "out"
 libs = ["lib"]
-remappings = ["@openzeppelin/contracts=lib/openzeppelin-contracts/contracts",
-"@foundry-era-contracts=lib/foundry-era-contracts/src/system-contracts/contracts" ]
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "@foundry-era-contracts/=lib/foundry-era-contracts/src/system-contracts/contracts/"
+]
 
-# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+[profile.ethereum]
+src = "src/ethereum"
+out = "out"
+test = "test"
+script= "script"
+
+[profile.zksync]
+src = "src/zksync"
+test = "test/zksync"
+script= "script/zksync"
+is-system = true

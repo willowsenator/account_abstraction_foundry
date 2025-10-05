@@ -9,7 +9,9 @@ contract ZkMinimalAccount is IAccount {
         external
         payable
         returns (bytes4 magic)
-    {}
+    {
+        
+    }
 
     function executeTransaction(bytes32 _txHash, bytes32 _suggestedSignedHash, Transaction memory _transaction)
         external
