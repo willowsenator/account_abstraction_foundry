@@ -5,6 +5,7 @@ remappings = [
     "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
     "@foundry-era-contracts/=lib/foundry-era-contracts/src/system-contracts/contracts/"
 ]
+bytecode_linking = true
 
 [profile.ethereum]
 src = "src/ethereum"
