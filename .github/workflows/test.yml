@@ -35,3 +35,32 @@ jobs:
         run: |
           forge test -vvv
         id: test
+  zksync:
+    name: Foundry (ZkSync)
+    runs-on: ubuntu-latest
+    env:
+      FOUNDRY_PROFILE: zksync
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: dutterbutter/foundry-zksync-toolchain@v1
+
+      - name: Show Forge version
+        run: |
+          forge --version
+
+      - name: Run Forge fmt
+        run: |
+          forge fmt --check
+        id: fmt
+
+      - name: Run Forge build
+        run: |
+          forge build --zksync
+        id: build
+
+      - name: Run Forge tests
+        run: |
+          forge test --zksync --system-mode=true -vvv
+        id: test

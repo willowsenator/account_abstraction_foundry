@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.28;
+pragma solidity 0.8.24;
 
 // Zksync Era imports
 
@@ -48,7 +48,13 @@ contract ZkMinimalAccount is IAccount, Ownable {
 
     receive() external payable {}
 
-    function validateTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
+    function validateTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    )
         external
         payable
         requireFromBootLoader
@@ -57,7 +63,13 @@ contract ZkMinimalAccount is IAccount, Ownable {
         return _validateTransaction(_transaction);
     }
 
-    function executeTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
+    function executeTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    )
         external
         payable
         requireFromBootLoaderOrOwner
@@ -70,7 +82,13 @@ contract ZkMinimalAccount is IAccount, Ownable {
         _executeTransaction(_transaction);
     }
 
-    function payForTransaction(bytes32, /*_txHash*/ bytes32, /*_suggestedSignedHash*/ Transaction memory _transaction)
+    function payForTransaction(
+        bytes32,
+        /*_txHash*/
+        bytes32,
+        /*_suggestedSignedHash*/
+        Transaction memory _transaction
+    )
         external
         payable
     {
@@ -82,8 +100,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
 
     function prepareForPaymaster(bytes32 _txHash, bytes32 _possibleSignedHash, Transaction memory _transaction)
         external
-        payable
-    {}
+        payable {}
 
     function _validateTransaction(Transaction memory _transaction) internal returns (bytes4 magic) {
         // Call nonceHolder to increment the nonce if it matches the transaction nonce
