@@ -55,7 +55,12 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    ) external payable requireFromBootLoader returns (bytes4 magic) {
+    )
+        external
+        payable
+        requireFromBootLoader
+        returns (bytes4 magic)
+    {
         return _validateTransaction(_transaction);
     }
 
@@ -65,7 +70,11 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    ) external payable requireFromBootLoaderOrOwner {
+    )
+        external
+        payable
+        requireFromBootLoaderOrOwner
+    {
         _executeTransaction(_transaction);
     }
 
@@ -83,7 +92,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    ) external payable {
+    )
+        external
+        payable
+    {
         bool success = _transaction.payToTheBootloader();
         if (!success) {
             revert ZkMinimalAccount__FailedToPay();
@@ -92,8 +104,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
 
     function prepareForPaymaster(bytes32 _txHash, bytes32 _possibleSignedHash, Transaction memory _transaction)
         external
-        payable
-    {}
+        payable {}
 
     function _validateTransaction(Transaction memory _transaction) internal returns (bytes4 magic) {
         // Call nonceHolder to increment the nonce if it matches the transaction nonce
