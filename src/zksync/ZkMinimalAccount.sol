@@ -29,6 +29,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
     error ZkMinimalAccount__ExecutionFailed();
     error ZkMinimalAccount__NotFromBootloaderOrOwner();
     error ZkMinimalAccount__FailedToPay();
+    error ZkMinimalAccount__InvalidSignature();
 
     modifier requireFromBootLoader() {
         if (msg.sender != address(BOOTLOADER_FORMAL_ADDRESS)) {
@@ -54,12 +55,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    )
-        external
-        payable
-        requireFromBootLoader
-        returns (bytes4 magic)
-    {
+    ) external payable requireFromBootLoader returns (bytes4 magic) {
         return _validateTransaction(_transaction);
     }
 
@@ -69,16 +65,15 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    )
-        external
-        payable
-        requireFromBootLoaderOrOwner
-    {
+    ) external payable requireFromBootLoaderOrOwner {
         _executeTransaction(_transaction);
     }
 
     function executeTransactionFromOutside(Transaction calldata _transaction) external payable {
-        _validateTransaction(_transaction);
+        bytes4 magic = _validateTransaction(_transaction);
+        if (magic != ACCOUNT_VALIDATION_SUCCESS_MAGIC) {
+            revert ZkMinimalAccount__InvalidSignature();
+        }
         _executeTransaction(_transaction);
     }
 
@@ -88,10 +83,7 @@ contract ZkMinimalAccount is IAccount, Ownable {
         bytes32,
         /*_suggestedSignedHash*/
         Transaction memory _transaction
-    )
-        external
-        payable
-    {
+    ) external payable {
         bool success = _transaction.payToTheBootloader();
         if (!success) {
             revert ZkMinimalAccount__FailedToPay();
@@ -100,7 +92,8 @@ contract ZkMinimalAccount is IAccount, Ownable {
 
     function prepareForPaymaster(bytes32 _txHash, bytes32 _possibleSignedHash, Transaction memory _transaction)
         external
-        payable {}
+        payable
+    {}
 
     function _validateTransaction(Transaction memory _transaction) internal returns (bytes4 magic) {
         // Call nonceHolder to increment the nonce if it matches the transaction nonce
