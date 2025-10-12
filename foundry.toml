@@ -6,16 +6,13 @@ remappings = [
     "@foundry-era-contracts/=lib/foundry-era-contracts/src/system-contracts/contracts/"
 ]
 
-solc = "0.8.24"
-auto_detect_solc = true
-
 [profile.ethereum]
 src = "src/ethereum"
 out = "out"
 test = "test/ethereum"
 script= "script"
 via-ir = false
-solc = "0.8.24"
+solc = "0.8.28"
 
 [profile.zksync]
 src = "src/zksync"
