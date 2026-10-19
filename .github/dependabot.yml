@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github-actions:
+        update-types: ["minor", "patch"]
+        patterns:
+          - "*"
+  - package-ecosystem: "gitsubmodule"
+    directories:
+      - "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      gitsubmodule:
+        update-types: ["minor", "patch"]
+        patterns:
+          - "*"
