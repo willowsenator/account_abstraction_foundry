@@ -124,7 +124,8 @@ contract MinimalAccountTest is Test {
         ops[0] = packedUserOp;
 
         // Act
-        vm.prank(randomUser);
+        // EntryPoint v0.9 only accepts handleOps from an EOA that is also tx.origin
+        vm.prank(randomUser, randomUser);
         IEntryPoint(activeNetworkConfig.entryPoint).handleOps(ops, payable(randomUser));
 
         // Assert
