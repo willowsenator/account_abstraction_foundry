@@ -12,7 +12,7 @@ jobs:
     env:
       FOUNDRY_PROFILE: ethereum
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -41,7 +41,7 @@ jobs:
     env:
       FOUNDRY_PROFILE: zksync
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install Foundry
         uses: dutterbutter/foundry-zksync-toolchain@v1
