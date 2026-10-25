@@ -44,7 +44,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install Foundry
-        uses: dutterbutter/foundry-zksync-toolchain@v1
+        uses: dutterbutter/foundry-zksync-toolchain@v2
 
       - name: Show Forge version
         run: |
