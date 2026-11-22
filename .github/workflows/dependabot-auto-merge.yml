@@ -29,6 +29,7 @@ jobs:
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
           UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+          PACKAGE_ECOSYSTEM: ${{ steps.metadata.outputs.package-ecosystem }}
         shell: bash
         run: |
           #!/usr/bin/env bash
@@ -48,16 +49,21 @@ jobs:
           }
           
           usage() {
-            printf 'Usage: automerge.sh <repo> <pr> <update-type> [--wait-seconds N] [--poll-seconds N]\n' >&2
+            printf 'Usage: automerge.sh <repo> <pr> <update-type> [<package-ecosystem>] [--wait-seconds N] [--poll-seconds N]\n' >&2
             exit 2
           }
           if [[ $# == 0 && -n ${REPO:-} && -n ${PR:-} ]]; then
-            set -- "$REPO" "$PR" "${UPDATE_TYPE:-}"
+            set -- "$REPO" "$PR" "${UPDATE_TYPE:-}" "${PACKAGE_ECOSYSTEM:-}"
           fi
           [[ $# -ge 3 ]] || usage
           repo=$1 pr=$2 update_type=$3
           [[ -n "$repo" && -n "$pr" ]] || usage
           shift 3
+          package_ecosystem=''
+          if [[ $# -gt 0 && $1 != -* ]]; then
+            package_ecosystem=$1
+            shift
+          fi
           wait_seconds=1800 poll_seconds=30
           while [[ $# -gt 0 ]]; do
             [[ $# -ge 2 && $2 =~ ^[0-9]+$ ]] || usage
@@ -107,7 +113,8 @@ jobs:
           case "$update_type" in
             version-update:semver-major) finish major - ;;
             version-update:semver-patch|version-update:semver-minor) ;;
-            *) finish unknown-type "${update_type:-empty}" ;;
+            '') [[ "$package_ecosystem" == submodules ]] || finish unknown-type empty ;;
+            *) finish unknown-type "$update_type" ;;
           esac
           
           started=$SECONDS
